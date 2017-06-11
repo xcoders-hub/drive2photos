@@ -1,0 +1,26 @@
+<html ng-app="drive2photos" ng-controller="mainctrl">
+
+<head>
+    <title>Drive 2 Photos</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+    <script src="/lib/angular-tree-control/angular-tree-control.js"></script>
+    <script src="app.js"></script>
+    <link rel="stylesheet" type="text/css" href="/lib/angular-tree-control/css/tree-control.css">
+</head>
+
+<body>
+    <a href="/authenticate" ng-show="!isAuthenticated">Authenticate with Google</a>
+    <h3>Select Drive Folder</h3>
+    <treecontrol class="tree-light" tree-model="folders" on-selection="folderSelected(node)" expanded-nodes="expandedNodes">
+        {{node.folderName}}
+    </treecontrol>
+    <br/>
+    <h3>Select Album</h3>
+    <div ng-show="isAuthenticated" ng-init="getAlbums()">
+        <select ng-options="album.id as album.title for album in albums track by album.id" ng-model="selectedAlbum"></select>
+    </div>
+    <br/>
+    <button ng-click="movePhotos()" ng-show="isAuthenticated">Move Photos</button>
+</body>
+
+</html>

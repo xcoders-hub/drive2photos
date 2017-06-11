@@ -1,0 +1,26 @@
+{
+  "name": "drive2photos",
+  "description": "Utility to upload pictures from Google Drive to Google Photos",
+  "main": "server/app.js",
+  "authors": [
+    "Pavan Andhukuri"
+  ],
+  "license": "ISC",
+  "keywords": [
+    "google",
+    "drive",
+    "photos"
+  ],
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular-tree-control": "^0.2.28"
+  }
+}

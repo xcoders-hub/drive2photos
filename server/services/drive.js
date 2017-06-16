@@ -48,3 +48,35 @@ function fetchFileListFromGoogle(pageToken, query, resultArray, callback) {
         }
     });
 }
+
+/**
+ * Accepts folder id and returns the list of files present the folder
+ */
+exports.getFilesFromFolder = (folderId, callback) => {
+    fetchFileListFromGoogle(null, "'" + folderId + "' in parents", [], (err, resultArray) => {
+        callback(err, resultArray);
+    });
+}
+
+/**
+ * Accepts file Id and returns the same
+ */
+exports.getFile = (fileId, callback) => {
+    var content;
+    var stream = driveService.files.get({
+        fileId: fileId,
+        alt: 'media'
+    }).on('end', function () {
+        callback(content);
+    }).on('error', function (err) {
+        console.log('Error during download', err);
+    });
+
+    stream.on('data', (chunk) => {
+        if (content) {
+            content = Buffer.concat([content, chunk], content.length + chunk.length);
+        } else {
+            content = chunk;
+        }
+    })
+}

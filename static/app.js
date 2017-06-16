@@ -4,7 +4,8 @@ app.controller('mainctrl', ['$scope', '$http', '$q', function ($scope, $http, $q
     $scope.folders = [];
     $scope.isAuthenticated = true;
     $scope.expandedNodes = [];
-    $scope.selectedAlbum = null;
+    $scope.selectedAlbum = '';
+    $scope.selectedFolder = '';
 
     $scope.getFolders = function (folderId) {
         var deferred = $q.defer();
@@ -58,16 +59,15 @@ app.controller('mainctrl', ['$scope', '$http', '$q', function ($scope, $http, $q
     }
 
     $scope.movePhotos = function () {
-        debugger;
         var body = {
             folderId: $scope.selectedFolder,
             albumId: $scope.selectedAlbum
         };
 
         $http.post('/export', body).then(function (response) {
-            debugger;
+            //TODO: Monitor progress
         }, function (error) {
-            debugger;
+            //TODO: Show a failure
         });
     }
 }]);

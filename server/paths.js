@@ -45,7 +45,17 @@ module.exports = (app) => {
         })
     });
 
+    /**
+     * Initiates the export process and acknowledges asynchronously
+     */
     app.post('/export', (req, res) => {
-        coreService.exportPhotos(req.body.folderId, req.body.albumId);
+
+        if (req.body.folderId == null || req.body.albumId == null) {
+            throw new Error('Invalid input received');
+        }
+
+        coreService.exportPhotos(req.body.folderId, req.body.albumId, (message) => {
+            res.send(message);
+        });
     });
 }

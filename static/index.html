@@ -2,25 +2,54 @@
 
 <head>
     <title>Drive 2 Photos</title>
+    <style type="text/css">
+        .container {
+            width: 960px;
+            margin: 0 auto;
+        }
+
+        .horizontal-section {
+            display: inline-block;
+            width: 49%;
+            vertical-align: top;
+        }
+    </style>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
     <script src="/lib/angular-tree-control/angular-tree-control.js"></script>
     <script src="app.js"></script>
     <link rel="stylesheet" type="text/css" href="/lib/angular-tree-control/css/tree-control.css">
+
 </head>
 
 <body>
-    <a href="/authenticate" ng-show="!isAuthenticated">Authenticate with Google</a>
-    <h3>Select Drive Folder</h3>
-    <treecontrol class="tree-light" tree-model="folders" on-selection="folderSelected(node)" expanded-nodes="expandedNodes">
-        {{node.folderName}}
-    </treecontrol>
-    <br/>
-    <h3>Select Album</h3>
-    <div ng-show="isAuthenticated" ng-init="getAlbums()">
-        <select ng-options="album.id as album.title for album in albums track by album.id" ng-model="selectedAlbum"></select>
+    <div class="container">
+        <br/>
+        <br/>
+        <div ng-show="!isAuthenticated" style="text-align: center">
+            <p>Please authenticate with your Google account to provide access. </p>
+            <a href="/authenticate"><img src="btn_google_signin_dark_normal_web.png" alt="Login with Google"/></a>
+        </div>
+        <div ng-show="isAuthenticated">
+            <p>Select the source folder from the left tree menu and the destination album from the drop down menu available
+                on the right and click on "Move Photos" to start the export process. The target Google Photos album is to
+                be manually created before initiating the export process.</p>
+            <hr/>
+            <div class="horizontal-section">
+                <h3>1. Select Drive Folder</h3>
+                <treecontrol class="tree-light" tree-model="folders" on-selection="folderSelected(node)" expanded-nodes="expandedNodes">
+                    {{node.folderName}}
+                </treecontrol>
+            </div>
+            <div class="horizontal-section">
+                <h3>2. Select Album</h3>
+                <div ng-init="getAlbums()">
+                    <select ng-options="album.id as album.title for album in albums track by album.id" ng-model="selectedAlbum"></select>
+                </div>
+                <br/>
+                <button ng-click="movePhotos()" ng-show="isAuthenticated" ng-disabled="selectedFolder=='' || selectedAlbum ==''">Move Photos</button>
+            </div>
+        </div>
     </div>
-    <br/>
-    <button ng-click="movePhotos()" ng-show="isAuthenticated">Move Photos</button>
 </body>
 
 </html>

@@ -5,20 +5,27 @@ var coreService = require('./services/core');
 
 module.exports = (app) => {
 
+    app.use((req, res, next) => {
+        authService.initOAuth2Client(req.session);
+        next();
+    })
+
     /**
     * Handles authenticate request. 
     */
 
     app.get('/authenticate', (req, res) => {
-        res.redirect(authService.getAuthUrl());
+        res.redirect(authService.getAuthUrl(req.session.oauth2Client));
     });
 
     /**
      * Callback URL for OAuth2. Receives auth code and and fetches access and refresh token
      */
     app.get('/oauthcallback', (req, res) => {
-        authService.setAuthCode(req.query.code);
-        res.redirect('/');
+        authService.setAuthCode(req.session.oauth2Client, req.query.code, () => {
+            res.redirect('/');
+        });
+
     });
 
     /**
@@ -26,7 +33,7 @@ module.exports = (app) => {
      * the folders present under the particular folder will be returned.
      */
     app.get('/drive/folders', (req, res, next) => {
-        driveService.getFolders(req.query.folder_id, (err, resultArray) => {
+        driveService.getFolders(req.session.oauth2Client, req.query.folder_id, (err, resultArray) => {
             if (err) {
                 res.status(500).send(err.message);
             } else {
@@ -40,7 +47,7 @@ module.exports = (app) => {
      * Returns the list of photo albums present in the connected google account
      */
     app.get('/photos/albums', (req, res) => {
-        photosService.getAlbums((albums) => {
+        photosService.getAlbums(req.session.oauth2Client, (albums) => {
             res.json(albums);
         })
     });
@@ -54,8 +61,21 @@ module.exports = (app) => {
             throw new Error('Invalid input received');
         }
 
-        coreService.exportPhotos(req.body.folderId, req.body.albumId, (message) => {
+        coreService.exportPhotos(req.session.oauth2Client, req.body.folderId, req.body.albumId, (message) => {
             res.send(message);
         });
+    });
+
+    /**
+     * Closes the session
+     */
+    app.post('/close', (req, res) => {
+        //Clear the OAuth2Client
+        authService.closeSession(req.session);
+
+        //Clear the session
+        delete req.session;
+
+        res.send('Done');
     });
 }

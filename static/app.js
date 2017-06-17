@@ -65,9 +65,16 @@ app.controller('mainctrl', ['$scope', '$http', '$q', function ($scope, $http, $q
         };
 
         $http.post('/export', body).then(function (response) {
-            //TODO: Monitor progress
+            alert('Process Initiated.');
         }, function (error) {
             //TODO: Show a failure
         });
+    }
+
+    $scope.closeSession = function () {
+        $http.post('/close').then(function () {
+            $scope.isAuthenticated = false;
+        });
+
     }
 }]);

@@ -26,10 +26,14 @@
         <br/>
         <br/>
         <div ng-show="!isAuthenticated" style="text-align: center">
+            <h2>Drive 2 Photos</h2>
             <p>Please authenticate with your Google account to provide access. </p>
             <a href="/authenticate"><img src="btn_google_signin_dark_normal_web.png" alt="Login with Google"/></a>
         </div>
         <div ng-show="isAuthenticated">
+            <a ng-click="closeSession()" style="float:right" href="#">Close Session</a>
+            <h2>Drive 2 Photos</h2>
+
             <p>Select the source folder from the left tree menu and the destination album from the drop down menu available
                 on the right and click on "Move Photos" to start the export process. The target Google Photos album is to
                 be manually created before initiating the export process.</p>

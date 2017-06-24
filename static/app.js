@@ -1,11 +1,13 @@
 var app = angular.module('drive2photos', ['treeControl']);
 
-app.controller('mainctrl', ['$scope', '$http', '$q', function ($scope, $http, $q) {
+app.controller('mainctrl', ['$scope', '$http', '$q', '$timeout', function ($scope, $http, $q, $timeout) {
     $scope.folders = [];
     $scope.isAuthenticated = true;
     $scope.expandedNodes = [];
     $scope.selectedAlbum = '';
     $scope.selectedFolder = '';
+    $scope.userInfo = {};
+    var socket;
 
     $scope.getFolders = function (folderId) {
         var deferred = $q.defer();
@@ -65,7 +67,7 @@ app.controller('mainctrl', ['$scope', '$http', '$q', function ($scope, $http, $q
         };
 
         $http.post('/export', body).then(function (response) {
-            alert('Process Initiated.');
+            $scope.processInitiated = true;
         }, function (error) {
             //TODO: Show a failure
         });
@@ -75,6 +77,41 @@ app.controller('mainctrl', ['$scope', '$http', '$q', function ($scope, $http, $q
         $http.post('/close').then(function () {
             $scope.isAuthenticated = false;
         });
+    }
 
+    $scope.getUserInfo = function () {
+        $http.get('/auth').then(function (data) {
+            $scope.userInfo = data.data;
+            createSocket();
+        }, function (error) {
+
+        });
+    }
+
+    $scope.getUserInfo();
+
+    function createSocket() {
+        socket = io('/');
+
+        socket.on('connect', function () {
+            socket.emit('registerUser', { userEmail: $scope.userInfo.userEmail });
+        });
+
+        socket.on('list_of_files', function (data) {
+            $timeout(function () {
+                $scope.fileList = data;
+            });
+
+        });
+
+        socket.on('completion', function (data) {
+            $timeout(function () {
+                $scope.fileList.forEach(function (v, i) {
+                    if (v.id == data) {
+                        v.status = 'COMPLETED';
+                    }
+                });
+            });
+        });
     }
 }]);

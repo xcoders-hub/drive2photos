@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html ng-app="drive2photos" ng-controller="mainctrl">
 
 <head>
@@ -13,9 +14,49 @@
             width: 49%;
             vertical-align: top;
         }
+
+        .file-item {
+            padding: 10px;
+            border: 2px solid #AEAEAE;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .file-item>.status {
+            float: right;
+        }
+
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 3px solid #3498db;
+            width: 15px;
+            height: 15px;
+            -webkit-animation: spin 2s linear infinite;
+            animation: spin 2s linear infinite;
+        }
+
+        @-webkit-keyframes spin {
+            0% {
+                -webkit-transform: rotate(0deg);
+            }
+            100% {
+                -webkit-transform: rotate(360deg);
+            }
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
     </style>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
     <script src="/lib/angular-tree-control/angular-tree-control.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
     <script src="app.js"></script>
     <link rel="stylesheet" type="text/css" href="/lib/angular-tree-control/css/tree-control.css">
 
@@ -24,35 +65,49 @@
 <body>
     <div class="container">
         <br/>
-        <br/>
         <div ng-show="!isAuthenticated" style="text-align: center">
             <h2>Drive 2 Photos</h2>
             <p>Please authenticate with your Google account to provide access. </p>
             <a href="/authenticate"><img src="btn_google_signin_dark_normal_web.png" alt="Login with Google"/></a>
         </div>
         <div ng-show="isAuthenticated">
-            <a ng-click="closeSession()" style="float:right" href="#">Close Session</a>
-            <h2>Drive 2 Photos</h2>
-
-            <p>Select the source folder from the left tree menu and the destination album from the drop down menu available
-                on the right and click on "Move Photos" to start the export process. The target Google Photos album is to
-                be manually created before initiating the export process.</p>
-            <hr/>
-            <div class="horizontal-section">
-                <h3>1. Select Drive Folder</h3>
-                <treecontrol class="tree-light" tree-model="folders" on-selection="folderSelected(node)" expanded-nodes="expandedNodes">
-                    {{node.folderName}}
-                </treecontrol>
+            <div style="float:right">
+                <span>{{userInfo.userName}} - {{userInfo.userEmail}}</span> &nbsp; &nbsp;
+                <a ng-click="closeSession()" href="#">Close Session</a>
             </div>
-            <div class="horizontal-section">
-                <h3>2. Select Album</h3>
-                <div ng-init="getAlbums()">
-                    <select ng-options="album.id as album.title for album in albums track by album.id" ng-model="selectedAlbum"></select>
+            <h2>Drive 2 Photos</h2>
+            <div ng-show="!processInitiated">
+                <p>Select the source folder from the left tree menu and the destination album from the drop down menu available
+                    on the right and click on "Move Photos" to start the export process. The target Google Photos album is
+                    to be manually created before initiating the export process.</p>
+                <hr/>
+                <div class="horizontal-section">
+                    <h3>1. Select Drive Folder</h3>
+                    <treecontrol class="tree-light" tree-model="folders" on-selection="folderSelected(node)" expanded-nodes="expandedNodes">
+                        {{node.folderName}}
+                    </treecontrol>
                 </div>
-                <br/>
-                <button ng-click="movePhotos()" ng-show="isAuthenticated" ng-disabled="selectedFolder=='' || selectedAlbum ==''">Move Photos</button>
+                <div class="horizontal-section">
+                    <h3>2. Select Album</h3>
+                    <div ng-init="getAlbums()">
+                        <select ng-options="album.id as album.title for album in albums track by album.id" ng-model="selectedAlbum"></select>
+                    </div>
+                    <br/>
+                    <button ng-click="movePhotos()" ng-show="isAuthenticated" ng-disabled="selectedFolder=='' || selectedAlbum ==''">Move Photos</button>
+                </div>
             </div>
         </div>
+
+        <div ng-show="processInitiated">
+            <p>Your files are being uploaded...</p>
+            <hr/>
+            <div class="file-item" ng-repeat="file in fileList">
+                {{file.name}}
+                <span class="status" ng-show="file.status=='COMPLETED'">&#x2705;</span>
+                <div class="status loader" ng-show="file.status!='COMPLETED'"></div>
+            </div>
+        </div>
+
     </div>
 </body>
 

@@ -1,4 +1,4 @@
-var authService = require('./services/google.auth');
+var authService = require('./services/auth');
 var driveService = require('./services/drive');
 var photosService = require('./services/photos');
 var coreService = require('./services/core');
@@ -6,9 +6,9 @@ var coreService = require('./services/core');
 module.exports = (app) => {
 
     app.use((req, res, next) => {
-        authService.initOAuth2Client(req.session);
+        authService.replenishSession(req.session);
         next();
-    })
+    });
 
     /**
     * Handles authenticate request. 
@@ -23,7 +23,10 @@ module.exports = (app) => {
      */
     app.get('/oauthcallback', (req, res) => {
         authService.setAuthCode(req.session.oauth2Client, req.query.code, () => {
-            res.redirect('/');
+            authService.refreshUserProfile(req.session, () => {
+                res.redirect('/');
+            });
+
         });
 
     });
@@ -61,7 +64,7 @@ module.exports = (app) => {
             throw new Error('Invalid input received');
         }
 
-        coreService.exportPhotos(req.session.oauth2Client, req.body.folderId, req.body.albumId, (message) => {
+        coreService.exportPhotos(req.session.oauth2Client, req.body.folderId, req.body.albumId, req.session.user.userEmail, (message) => {
             res.send(message);
         });
     });
@@ -74,8 +77,19 @@ module.exports = (app) => {
         authService.closeSession(req.session);
 
         //Clear the session
-        delete req.session;
+        req.session.destroy();
 
         res.send('Done');
+    });
+
+    /**
+     * Get the auth user info
+     */
+    app.get('/auth', (req, res) => {
+        if (req.session.user) {
+            var resp = { "userName": req.session.user.userName, "userEmail": req.session.user.userEmail };
+        }
+        
+        res.json(resp);
     });
 }

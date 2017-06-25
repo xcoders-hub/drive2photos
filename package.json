@@ -5,7 +5,8 @@
   "main": "server/app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server/app.js"
+    "start": "node server/app.js",
+    "postinstall": "./node_modules/bower/bin/bower install"
   },
   "keywords": [
     "google",
@@ -13,7 +14,7 @@
     "photos"
   ],
   "author": "Pavan Andhukuri",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "body-parser": "^1.17.2",
     "bower": "^1.8.0",
@@ -22,5 +23,14 @@
     "googleapis": "^19.0.0",
     "picasa": "^1.0.6",
     "socket.io": "^2.0.3"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pavanandhukuri/drive2photos.git"
+  },
+  "bugs": {
+    "url": "https://github.com/pavanandhukuri/drive2photos/issues"
+  },
+  "homepage": "https://github.com/pavanandhukuri/drive2photos#readme"
 }

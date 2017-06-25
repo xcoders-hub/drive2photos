@@ -65,12 +65,14 @@ app.controller('mainctrl', ['$scope', '$http', '$q', '$timeout', function ($scop
             folderId: $scope.selectedFolder,
             albumId: $scope.selectedAlbum
         };
-
+        
+        createSocket();
         $http.post('/export', body).then(function (response) {
             $scope.processInitiated = true;
         }, function (error) {
             //TODO: Show a failure
         });
+
     }
 
     $scope.closeSession = function () {
@@ -82,7 +84,6 @@ app.controller('mainctrl', ['$scope', '$http', '$q', '$timeout', function ($scop
     $scope.getUserInfo = function () {
         $http.get('/auth').then(function (data) {
             $scope.userInfo = data.data;
-            createSocket();
         }, function (error) {
 
         });
@@ -104,6 +105,15 @@ app.controller('mainctrl', ['$scope', '$http', '$q', '$timeout', function ($scop
 
         });
 
+
+        socket.on('no_files', function (data) {
+            $timeout(function () {
+                alert('No pictures found in the folder!!');
+                location.reload();
+            });
+
+        });
+
         socket.on('completion', function (data) {
             $timeout(function () {
                 $scope.fileList.forEach(function (v, i) {
@@ -111,6 +121,11 @@ app.controller('mainctrl', ['$scope', '$http', '$q', '$timeout', function ($scop
                         v.status = 'COMPLETED';
                     }
                 });
+            });
+        });
+        socket.on('all_files_done', function (data) {
+            $timeout(function () {
+                alert('Pictures have been uploaded!!');
             });
         });
     }

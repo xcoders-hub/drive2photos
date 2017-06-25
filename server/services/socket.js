@@ -25,4 +25,9 @@ Socket.prototype.update = (userEmail, eventName, message) => {
     socketClients[userEmail].emit(eventName, message);
 }
 
+Socket.prototype.disconnect = (userEmail) => {
+    socketClients[userEmail].disconnect();
+    delete socketClients[userEmail];
+}
+
 module.exports = Socket

@@ -23,9 +23,11 @@ console.log('Setting up paths...');
 require('./paths')(app);
 console.log('Done...');
 
+var port = process.env.port || 3000;
+
 //Starting the server
-var server = app.listen(3000, () => {
-    console.log('Server started... Listening on port 3000...')
+var server = app.listen(port, () => {
+    console.log('Server started... Listening on port: ' + port)
 });
 
 //Setting up socket service

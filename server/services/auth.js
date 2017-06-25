@@ -1,6 +1,5 @@
 var google = require('googleapis');
 var OAuth2 = google.auth.OAuth2;
-var config = require('../config');
 var plusService = google.plus('v1');
 
 /**
@@ -14,6 +13,27 @@ const scopes = [
 ];
 
 var sessionStore = {};
+
+/** 
+ * Check if config options are provided from environment, take the settings from environment 
+ * or look in config.js
+ */
+var clientId;
+var clientSecret;
+var oauthCallback;
+
+if (process.env.CLIENT_ID && process.env.CLIENT_SECRET && process.env.OAUTH_CALLBACK) {
+    clientId = process.env.CLIENT_ID;
+    clientSecret = process.env.CLIENT_SECRET;
+    oauthCallback = process.env.OAUTH_CALLBACK;
+} else {
+    var config = require('../config');
+
+    clientId = config.oauth.clientId;
+    clientSecret = config.oauth.clientSecret;
+    oauthCallback = config.oauth.callback;
+}
+
 
 /**
  * Generates the OAuth2 request URL
@@ -50,7 +70,7 @@ exports.replenishSession = (session) => {
     if (sessionStore[session.id] == null) {
         // If corresponding oauth2 client is not available, create a new one and store the same.
         sessionStore[session.id] = {};
-        sessionStore[session.id].oauth2Client = new OAuth2(config.oauth.clientId, config.oauth.clientSecret, config.oauth.callback);
+        sessionStore[session.id].oauth2Client = new OAuth2(clientId, clientSecret, oauthCallback);
     }
 
     // In either cases, refresh the object to make sure it contains the prototype methods

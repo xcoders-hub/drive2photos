@@ -92,7 +92,7 @@ app.controller('mainctrl', ['$scope', '$http', '$q', '$timeout', function ($scop
     $scope.getUserInfo();
 
     function createSocket() {
-        socket = io('/');
+        socket = io();
 
         socket.on('connect', function () {
             socket.emit('registerUser', { userEmail: $scope.userInfo.userEmail });

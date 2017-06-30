@@ -54,9 +54,9 @@
             }
         }
     </style>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+    <script src="/lib/angular/angular.min.js"></script>
     <script src="/lib/angular-tree-control/angular-tree-control.js"></script>
-    <script src="/socket.io/socket.io.js"></script>
+    <!--<script src="/socket.io/socket.io.js"></script>-->
     <script src="app.js"></script>
     <link rel="stylesheet" type="text/css" href="/lib/angular-tree-control/css/tree-control.css">
 
@@ -98,13 +98,14 @@
             </div>
         </div>
 
-        <div ng-show="processInitiated">
-            <p>Your files are being uploaded...</p>
+        <div ng-show="isAuthenticated && processInitiated">
+            <p ng-show="!processCompleted">Your photos are being uploaded...</p>
+            <p ng-show="processCompleted">Your photos are uploaded successfully... &#x2705;</p>
             <hr/>
             <div class="file-item" ng-repeat="file in fileList">
                 {{file.name}}
-                <span class="status" ng-show="file.status=='COMPLETED'">&#x2705;</span>
-                <div class="status loader" ng-show="file.status!='COMPLETED'"></div>
+                <span class="status" ng-show="file.isCompleted">&#x2705;</span>
+                <div class="status loader" ng-show="!file.isCompleted"></div>
             </div>
         </div>
 

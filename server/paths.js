@@ -64,7 +64,7 @@ module.exports = (app) => {
             throw new Error('Invalid input received');
         }
 
-        coreService.exportPhotos(req.session.oauth2Client, req.body.folderId, req.body.albumId, req.session.user.userEmail, (message) => {
+        coreService.exportPhotos(req.session, req.body.folderId, req.body.albumId, (message) => {
             res.send(message);
         });
     });
@@ -89,7 +89,14 @@ module.exports = (app) => {
         if (req.session.user) {
             var resp = { "userName": req.session.user.userName, "userEmail": req.session.user.userEmail };
         }
-        
+
         res.json(resp);
+    });
+
+    /**
+     * Returns the transaction status of the current logged in user
+     */
+    app.get('/status', (req, res) => {
+        res.json(req.session.transactionStatus);
     });
 }

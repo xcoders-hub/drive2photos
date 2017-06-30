@@ -61,8 +61,8 @@ exports.setAuthCode = (oauth2Client, code, callback) => {
 }
 
 /**
- * Refreshes the session from the session store. The default session store of express is somehow not working. 
- * So, the session information is temporarily being stored inmemory in a variable.
+ * Refreshes the session from the session store. Variables stored in session are serialized, so they will lose prototyping,
+ * so storing the list of oauth2clients manually and replenishing them when needed.
  */
 exports.replenishSession = (session) => {
 
@@ -73,10 +73,8 @@ exports.replenishSession = (session) => {
         sessionStore[session.id].oauth2Client = new OAuth2(clientId, clientSecret, oauthCallback);
     }
 
-    // In either cases, refresh the object to make sure it contains the prototype methods
+    // // In either cases, refresh the object to make sure it contains the prototype methods
     session.oauth2Client = sessionStore[session.id].oauth2Client;
-    session.user = sessionStore[session.id].user;
-
 }
 
 /**
@@ -87,7 +85,7 @@ exports.closeSession = (session) => {
 }
 
 /**
- * 
+ * Updates the session variable with user's email and name details
  */
 exports.refreshUserProfile = (session, callback) => {
     plusService.people.get({ 'userId': 'me', auth: session.oauth2Client }, (err, res) => {
@@ -101,9 +99,10 @@ exports.refreshUserProfile = (session, callback) => {
                 }
             });
 
-            sessionStore[session.id].user = { "userName": userName, "userEmail": userEmail };
+            session.user = { "userName": userName, "userEmail": userEmail };
 
             callback();
         }
-    })
+    });
 }
+

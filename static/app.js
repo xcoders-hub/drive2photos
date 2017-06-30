@@ -60,30 +60,51 @@ app.controller('mainctrl', ['$scope', '$http', '$q', '$timeout', function ($scop
         });
     }
 
+    var checker;
+
     $scope.movePhotos = function () {
         var body = {
             folderId: $scope.selectedFolder,
             albumId: $scope.selectedAlbum
         };
-        
-        createSocket();
+
+
         $http.post('/export', body).then(function (response) {
             $scope.processInitiated = true;
+            checker = $timeout($scope.refreshStatus);
         }, function (error) {
             //TODO: Show a failure
         });
+    }
 
+    $scope.refreshStatus = function () {
+        $http.get('/status').then(function (data) {
+            if (data.data.status == 'started') {
+                $scope.processInitiated = true;
+            }
+
+            $scope.fileList = data.data.files;
+
+            if (data.data.status == 'completed') {
+                $timeout.cancel(checker);
+                $scope.processInitiated = $scope.processCompleted = true;
+            } else {
+                checker = $timeout($scope.refreshStatus, 5000);
+            }
+        });
     }
 
     $scope.closeSession = function () {
         $http.post('/close').then(function () {
             $scope.isAuthenticated = false;
+
         });
     }
 
     $scope.getUserInfo = function () {
         $http.get('/auth').then(function (data) {
             $scope.userInfo = data.data;
+            $scope.refreshStatus();
         }, function (error) {
 
         });
@@ -91,42 +112,4 @@ app.controller('mainctrl', ['$scope', '$http', '$q', '$timeout', function ($scop
 
     $scope.getUserInfo();
 
-    function createSocket() {
-        socket = io();
-
-        socket.on('connect', function () {
-            socket.emit('registerUser', { userEmail: $scope.userInfo.userEmail });
-        });
-
-        socket.on('list_of_files', function (data) {
-            $timeout(function () {
-                $scope.fileList = data;
-            });
-
-        });
-
-
-        socket.on('no_files', function (data) {
-            $timeout(function () {
-                alert('No pictures found in the folder!!');
-                location.reload();
-            });
-
-        });
-
-        socket.on('completion', function (data) {
-            $timeout(function () {
-                $scope.fileList.forEach(function (v, i) {
-                    if (v.id == data) {
-                        v.status = 'COMPLETED';
-                    }
-                });
-            });
-        });
-        socket.on('all_files_done', function (data) {
-            $timeout(function () {
-                alert('Pictures have been uploaded!!');
-            });
-        });
-    }
 }]);

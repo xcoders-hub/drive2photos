@@ -1,13 +1,17 @@
 var express = require('express');
 var bodyParser = require('body-parser')
 var session = require('express-session');
-var serviceHolder = require('./services/service.holder');
 
 var app = express();
 //Enabling session management
 var sessionOptions = {
     secret: 'my-secret',
-    cookie: {}
+    cookie: {
+        path: '/',
+        httpOnly: true
+    },
+    resave: true,
+    saveUninitialized: true
 };
 app.use(session(sessionOptions));
 
@@ -29,9 +33,3 @@ var port = process.env.PORT || 3000;
 var server = app.listen(port, () => {
     console.log('Server started... Listening on port: ' + port)
 });
-
-//Setting up socket service
-console.log('Setting up socket...');
-var socketService = require('./services/socket')(server);
-serviceHolder.setService('socket', socketService);
-console.log('Done...');

@@ -14,7 +14,7 @@ exports.getFolders = (oauth2Client, folderId, callback) => {
         callback(err, resultArray);
     });
 }
-
+``
 
 /**
  * 
@@ -42,7 +42,7 @@ function fetchFileListFromGoogle(oauth2Client, pageToken, query, resultArray, ca
             //Keep Calling fetchFileList until we receive all the files if nextPageToken exists, else callback
             if (res.nextPageToken) {
                 console.log("Page token", res.nextPageToken);
-                fetchFileListFromGoogle(oauth2Client, res.nextPageToken, query, parents, resultArray, callback);
+                fetchFileListFromGoogle(oauth2Client, res.nextPageToken, query, resultArray, callback);
             } else {
                 callback(null, resultArray);
             }

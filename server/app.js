@@ -2,6 +2,9 @@ var express = require('express');
 var bodyParser = require('body-parser')
 var session = require('express-session');
 
+// Loading properties from .env
+require('dotenv').config();
+
 var app = express();
 //Enabling session management
 var sessionOptions = {

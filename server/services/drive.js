@@ -29,7 +29,6 @@ function fetchFileListFromGoogle(oauth2Client, pageToken, query, resultArray, ca
     driveService.files.list({
         auth: oauth2Client,
         q: query,
-        spaces: 'drive',
         pageToken: pageToken
     }, (err, res) => {
         if (err) {

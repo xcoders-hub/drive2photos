@@ -22,18 +22,9 @@ var clientId;
 var clientSecret;
 var oauthCallback;
 
-if (process.env.CLIENT_ID && process.env.CLIENT_SECRET && process.env.OAUTH_CALLBACK) {
-    clientId = process.env.CLIENT_ID;
-    clientSecret = process.env.CLIENT_SECRET;
-    oauthCallback = process.env.OAUTH_CALLBACK;
-} else {
-    var config = require('../config');
-
-    clientId = config.oauth.clientId;
-    clientSecret = config.oauth.clientSecret;
-    oauthCallback = config.oauth.callback;
-}
-
+clientId = process.env.CLIENT_ID;
+clientSecret = process.env.CLIENT_SECRET;
+oauthCallback = process.env.OAUTH_CALLBACK;
 
 /**
  * Generates the OAuth2 request URL

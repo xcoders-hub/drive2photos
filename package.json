@@ -32,5 +32,8 @@
   "bugs": {
     "url": "https://github.com/pavanandhukuri/drive2photos/issues"
   },
-  "homepage": "https://github.com/pavanandhukuri/drive2photos#readme"
+  "homepage": "https://github.com/pavanandhukuri/drive2photos#readme",
+  "engines": {
+    "node": "8.1.4"
+  }
 }

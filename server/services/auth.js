@@ -1,6 +1,8 @@
 var google = require('googleapis');
 var OAuth2 = google.auth.OAuth2;
 var plusService = google.plus('v1');
+const Photos = require('googlephotos');
+
 
 /**
  * Contains services and rest mappings related to managing authorization with Google
@@ -9,7 +11,7 @@ var plusService = google.plus('v1');
 const scopes = [
     'email',
     'https://www.googleapis.com/auth/drive.readonly',
-    'https://picasaweb.google.com/data/'
+    Photos.Scopes.READ_AND_APPEND
 ];
 
 var sessionStore = {};
@@ -25,7 +27,6 @@ var oauthCallback;
 clientId = process.env.CLIENT_ID;
 clientSecret = process.env.CLIENT_SECRET;
 oauthCallback = process.env.OAUTH_CALLBACK;
-
 /**
  * Generates the OAuth2 request URL
  */

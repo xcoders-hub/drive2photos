@@ -119,10 +119,8 @@
                     </treecontrol>
                 </div>
                 <div class="horizontal-section">
-                    <h3>2. Select Album</h3>
-                    <div ng-init="getAlbums()">
-                        <select ng-options="album.id as album.title for album in albums track by album.id" ng-model="selectedAlbum"></select>
-                    </div>
+                    <h3>2. Enter Album Name</h3>
+                    <input type="text" ng-model="selectedAlbum" id="albumName" name="albumName" />
                     <br/>
                     <button ng-click="movePhotos()" ng-show="isAuthenticated" ng-disabled="selectedFolder=='' || selectedAlbum ==''">Move Photos</button>
                 </div>

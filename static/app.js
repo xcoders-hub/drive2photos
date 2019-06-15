@@ -49,15 +49,20 @@ app.controller('mainctrl', ['$scope', '$http', '$q', '$timeout', function ($scop
     }, function (error) {
         if (error == "No access or refresh token is set.") {
             $scope.isAuthenticated = false;
+        } else {
+            alert(error);
         }
+        
     });
 
     $scope.getAlbums = function () {
-        $http.get('/photos/albums').then(function (data) {
-            $scope.albums = data.data;
-        }, function (error) {
-
-        });
+        if ($scope.isAuthenticated) {
+            $http.get('/photos/albums').then(function (data) {
+                $scope.albums = data.data;
+            }, function (error) {
+                alert(error);
+            });
+        }
     }
 
     var checker;
@@ -65,7 +70,7 @@ app.controller('mainctrl', ['$scope', '$http', '$q', '$timeout', function ($scop
     $scope.movePhotos = function () {
         var body = {
             folderId: $scope.selectedFolder,
-            albumId: $scope.selectedAlbum
+            albumName: $scope.selectedAlbum
         };
 
 

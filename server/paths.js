@@ -1,6 +1,5 @@
 var authService = require('./services/auth');
 var driveService = require('./services/drive');
-var photosService = require('./services/photos');
 var coreService = require('./services/core');
 
 module.exports = (app) => {
@@ -47,24 +46,15 @@ module.exports = (app) => {
     });
 
     /**
-     * Returns the list of photo albums present in the connected google account
-     */
-    app.get('/photos/albums', (req, res) => {
-        photosService.getAlbums(req.session.oauth2Client, (albums) => {
-            res.json(albums);
-        })
-    });
-
-    /**
      * Initiates the export process and acknowledges asynchronously
      */
     app.post('/export', (req, res) => {
 
-        if (req.body.folderId == null || req.body.albumId == null) {
+        if (req.body.folderId == null || req.body.albumName == null) {
             throw new Error('Invalid input received');
         }
 
-        coreService.exportPhotos(req.session, req.body.folderId, req.body.albumId, (message) => {
+        coreService.exportPhotos(req.session, req.body.folderId, req.body.albumName, (message) => {
             res.send(message);
         });
     });

@@ -1,28 +1,32 @@
-var google = require('googleapis');
 var driveService = require('./drive');
 var photosService = require('./photos');
 
 /**
  * Service and controller for handling core functions
  */
-exports.exportPhotos = (session, folderId, albumId, callback) => {
+exports.exportPhotos = (session, folderId, albumName, callback) => {
 
     var oauth2Client = session.oauth2Client;
-    driveService.getFilesFromFolder(oauth2Client, folderId, (err, files) => {
-        if (files.length != 0) {
-            session.transactionStatus = {};
-            session.transactionStatus.status = 'started';
-            session.transactionStatus.files = files;
-            session.save();
 
-            //Push files one after another
-            pushFile(files, session, oauth2Client, 0, albumId);
-        } else {
-            session.transactionStatus = {};
-            session.transactionStatus.status = 'completed';
-            session.transactionStatus.files = [];
-            session.save();
-        }
+    photosService.createAlbum(oauth2Client, albumName).then((data)=>{
+        var albumId = data.id;
+
+        driveService.getFilesFromFolder(oauth2Client, folderId, (err, files) => {
+            if (files.length != 0) {
+                session.transactionStatus = {};
+                session.transactionStatus.status = 'started';
+                session.transactionStatus.files = files;
+                session.save();
+    
+                //Push files one after another
+                pushFile(files, session, oauth2Client, 0, albumId);
+            } else {
+                session.transactionStatus = {};
+                session.transactionStatus.status = 'completed';
+                session.transactionStatus.files = [];
+                session.save();
+            }
+        });
     });
 
     callback('INITIATED');

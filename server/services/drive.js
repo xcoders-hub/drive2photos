@@ -53,7 +53,7 @@ function fetchFileListFromGoogle(oauth2Client, pageToken, query, resultArray, ca
  * Accepts folder id and returns the list of files present the folder
  */
 exports.getFilesFromFolder = (oauth2Client, folderId, callback) => {
-    fetchFileListFromGoogle(oauth2Client, null, "'" + folderId + "' in parents and mimeType contains 'image/'", [], (err, resultArray) => {
+    fetchFileListFromGoogle(oauth2Client, null, "'" + folderId + "' in parents and mimeType contains 'video/mp4/'", [], (err, resultArray) => {
         callback(err, resultArray);
     });
 }
